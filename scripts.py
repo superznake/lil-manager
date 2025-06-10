@@ -17,12 +17,15 @@ password = getenv("MC_PASSWORD")
 async def checker():
     logging.info("Initialized checker")
     await asyncio.sleep(5*60)
-    with MCRcon(host, password, port=port) as mcr:
-        response = mcr.command("list").replace("There are ", "")[0]
-        if response == "0":
-            mcr.command("stop")
-        else:
-            asyncio.create_task(checker())
+    try:
+        with MCRcon(host, password, port=port) as mcr:
+            response = mcr.command("list").replace("There are ", "")[0]
+            if response == "0":
+                mcr.command("stop")
+            else:
+                asyncio.create_task(checker())
+    except Exception as e:
+        logging.info(e)
 
 
 async def start():

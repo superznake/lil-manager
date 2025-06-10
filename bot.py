@@ -80,11 +80,13 @@ async def base_handler(message: Message):
                             delay = message.text.replace("/restart ", "")
                             if delay.isdigit():
                                 delay = int(delay)
+                                started = None
                                 asyncio.create_task(scripts.restart(delay=delay))
                                 await message.answer(text=f"Restart in {delay} sec")
                             else:
                                 await message.answer(text="Error! Check your command.")
                         else:
+                            started = None
                             asyncio.create_task(scripts.restart())
                             await message.answer(text="Restart in 60 sec")
                     elif message.text.startswith("/stop"):
@@ -92,11 +94,13 @@ async def base_handler(message: Message):
                             delay = message.text.replace("/stop ", "")
                             if delay.isdigit():
                                 delay = int(delay)
+                                started = None
                                 asyncio.create_task(scripts.stop(delay=delay))
                                 await message.answer(text=f"Stop in {delay} sec")
                             else:
                                 await message.answer(text="Error! Check your command.")
                         else:
+                            started = None
                             asyncio.create_task(scripts.stop())
                             await message.answer(text="Stop in 60 sec")
                     elif message.text.startswith("/say"):
