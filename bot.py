@@ -18,6 +18,8 @@ PASSWORD: str = getenv("PASSWORD")
 
 users: Dict[int, str] = {0: "0"}
 
+started = None
+
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 dp = Dispatcher()
@@ -27,6 +29,7 @@ dp = Dispatcher()
 async def base_handler(message: Message):
     global users
     global PASSWORD
+    global started
     logging.info(f"received message '{message.text}' from {message.from_user.username}| time: {message.date}")
     state = users.get(message.chat.id)
     match state:
@@ -66,8 +69,11 @@ async def base_handler(message: Message):
                     users[message.chat.id] = "start"
                     await message.answer(text="Hello, who are you?")
                 case "/launch":
-                    scripts.start()
-                    await message.answer(text="Starting...")
+                    if started is None or started.done():
+                        started = asyncio.create_task(scripts.start())
+                        await message.answer(text="Starting...")
+                    else:
+                        await message.answer(text="Server is running already")
                 case _:
                     if message.text.startswith("/restart"):
                         if len(message.text) > len("/restart"):
@@ -104,6 +110,19 @@ async def base_handler(message: Message):
                     else:
                         await message.answer(text="Wrong command")
 
+        case "user":
+            match message.text:
+                case "back":
+                    users[message.chat.id] = "start"
+                    await message.answer(text="Hello, who are you?")
+                case "/launch":
+                    if started is None or started.done():
+                        started = asyncio.create_task(scripts.start())
+                        await message.answer(text="Starting...")
+                    else:
+                        await message.answer(text="Server is running already")
+                case _:
+                    await message.answer(text="Wrong command")
         case _:
             users[message.chat.id] = "start"
             await message.answer(text="Hello, who are you?")

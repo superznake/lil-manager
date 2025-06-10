@@ -14,9 +14,21 @@ port = int(getenv("MC_PORT"))
 password = getenv("MC_PASSWORD")
 
 
-def start():
+async def checker():
+    logging.info("Initialized checker")
+    await asyncio.sleep(5*60)
+    with MCRcon(host, password, port=port) as mcr:
+        response = mcr.command("list").replace("There are ", "")[0]
+        if response == "0":
+            mcr.command("stop")
+        else:
+            asyncio.create_task(checker())
+
+
+async def start():
     logging.info("Initialized start")
     subprocess.Popen('./start.sh', stdout=subprocess.PIPE)
+    await checker()
 
 
 async def stop(delay: int = 60):
@@ -37,3 +49,5 @@ def say(text: str = "Hello!"):
     logging.info(f"Initialized say with {text} text")
     with MCRcon(host, password, port=port) as mcr:
         mcr.command(f"say {text}")
+
+checker()
