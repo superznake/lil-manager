@@ -40,7 +40,7 @@ async def base_handler(message: Message):
                     await message.answer(text="So give me a password, Admin!")
                 case "user":
                     users[message.chat.id] = "user"
-                    await message.answer(text="Hello, user! Instruction is here: http://superznake.ru/minecraft/how")
+                    await message.answer(text="Hello, user! Instruction is here: http://superznake.store/minecraft/how")
                 case _:
                     await message.answer(text="Sorry, i don't know (")
 
