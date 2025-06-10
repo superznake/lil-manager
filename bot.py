@@ -43,13 +43,19 @@ async def base_handler(message: Message):
                 case "back":
                     users[message.chat.id] = "start"
                     await message.answer(text="Hello, who are you?")
-                case PASSWORD:
-                    users[message.chat.id] = "admin"
-                    await message.answer(text="Hello, Admin! Your commands: \n\n"
-                                              "/launch - start the server\n"
-                                              "/restart [t (optional, default: 60)] - restarts server after t sec delay"
-                                              "\n/stop [t (optional, default: 60)] - restarts server after t sec delay"
-                                              "\n/say [message optional, default:Hello] - sends message in chat")
+                case _:
+                    if message.text == PASSWORD:
+                        users[message.chat.id] = "admin"
+                        await message.answer(text="Hello, Admin! Your commands: \n\n"
+                                                  "/launch - start the server\n"
+                                                  "/restart [t (optional, default: 60)] - "
+                                                  "restarts server after t sec delay"
+                                                  "\n/stop [t (optional, default: 60)] - "
+                                                  "restarts server after t sec delay"
+                                                  "\n/say [message optional, default:Hello] - "
+                                                  "sends message in chat")
+                    else:
+                        await message.answer(text="Wrong password!")
 
         case "admin":
             match message.text:
@@ -65,24 +71,24 @@ async def base_handler(message: Message):
                             delay = message.text.replace("/restart ", "")
                             if delay.isdigit():
                                 delay = int(delay)
-                                scripts.restart(delay=delay)
+                                asyncio.create_task(scripts.restart(delay=delay))
                                 await message.answer(text=f"Restart in {delay} sec")
                             else:
                                 await message.answer(text="Error! Check your command.")
                         else:
-                            scripts.restart()
+                            asyncio.create_task(scripts.restart())
                             await message.answer(text="Restart in 60 sec")
                     elif message.text.startswith("/stop"):
                         if len(message.text) > len("/stop"):
                             delay = message.text.replace("/stop ", "")
                             if delay.isdigit():
                                 delay = int(delay)
-                                scripts.stop(delay=delay)
+                                asyncio.create_task(scripts.stop(delay=delay))
                                 await message.answer(text=f"Stop in {delay} sec")
                             else:
                                 await message.answer(text="Error! Check your command.")
                         else:
-                            scripts.stop()
+                            asyncio.create_task(scripts.stop())
                             await message.answer(text="Stop in 60 sec")
                     elif message.text.startswith("/say"):
                         if len(message.text) > len("/say"):
