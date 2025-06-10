@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import sys
 from os import getenv
 from typing import Dict
 
@@ -16,6 +17,8 @@ TOKEN = getenv("BOT_TOKEN")
 PASSWORD: str = getenv("PASSWORD")
 
 users: Dict[int, str] = {0: "0"}
+
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 dp = Dispatcher()
 
